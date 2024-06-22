@@ -77,7 +77,7 @@ const CartDetails = () => {
         "Content-type": "application/json"
       };
   
-      const res = await fetch("http://localhost:8000/api/create-checkout-session", {
+      const res = await fetch("http://ecommercepayment.vercel.app/api/create-checkout-session", {
         method: "POST",
         headers: headers,
         body: JSON.stringify(body)
