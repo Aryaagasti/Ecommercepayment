@@ -11,7 +11,7 @@ dotenv.config({
 app.use(express.json())
 app.use(cors(
     {
-        origin: ["http://ecommercepayment.vercel.app"],
+        origin: [""],
         methods: ["POST", "GET"],
         credentials: true
     }
