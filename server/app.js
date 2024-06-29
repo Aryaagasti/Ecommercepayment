@@ -4,6 +4,8 @@ const dotenv = require("dotenv")
 const cors = require("cors")
 const stripe = require("stripe")("sk_test_51PUKza2LGrAf9sT3yd8ClyOGb4sDMWRECcN9jukm9q8k5jABsJHd2nV9gmWvCRxCV5iAcDuxmBqqaEx0NECFzF7500HXJfmKZg")
 
+
+
 dotenv.config({
     path: './.env'
 })
@@ -16,6 +18,8 @@ app.use(cors(
         credentials: true
     }
 ))
+
+
 
 app.get("/",(req,res)=>{
     res.send("welcome to this page")
@@ -44,8 +48,8 @@ app.post("/api/create-checkout-session", async (req, res) => {
             payment_method_types: ["card"],
             line_items: lineItems,
             mode: "payment",
-            success_url: "http://localhost:5173/success", // Adjust this URL to match your frontend setup
-            cancel_url: "http://localhost:5173/cancel", // Adjust this URL to match your frontend setup
+            success_url: "http://localhost:5173/success", // Replace with your actual success URL
+            cancel_url: "http://localhost:5173/cancel", // Replace with your actual cancel URL
         });
 
         res.json({ id: session.id });
@@ -54,8 +58,6 @@ app.post("/api/create-checkout-session", async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 });
-
-
 
 
 const PORT = process.env.PORT

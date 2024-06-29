@@ -1,71 +1,66 @@
-import React, { useEffect, useState } from 'react'
-import "./cartstyle.css"
+import React, { useEffect, useState } from 'react';
+import "./cartstyle.css";
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, removeToCart, removeSingleIteams, emptycartIteam } from '../redux/features/cartSlice';
-import {loadStripe} from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import toast from 'react-hot-toast';
-
+import { ConnectButton } from '@rainbow-me/rainbowkit'; // Import ConnectButton
 
 const CartDetails = () => {
-
   const { carts } = useSelector((state) => state.allCart);
-
   const [totalprice, setPrice] = useState(0);
   const [totalquantity, setTotalQuantity] = useState(0);
-
   const dispatch = useDispatch();
 
-  // add to cart
+  // Add to cart
   const handleIncrement = (e) => {
-    dispatch(addToCart(e))
+    dispatch(addToCart(e));
   }
 
-  // remove to cart
+  // Remove from cart
   const handleDecrement = (e) => {
     dispatch(removeToCart(e));
-    toast.success("Item Remove From Your Cart")
+    toast.success("Item Remove From Your Cart");
   }
 
-  // remove single item 
+  // Remove single item
   const handleSingleDecrement = (e) => {
-    dispatch(removeSingleIteams(e))
+    dispatch(removeSingleIteams(e));
   }
 
-  // empty cart
+  // Empty cart
   const emptycart = () => {
-    dispatch(emptycartIteam())
-    toast.success("Your Cart is Empty")
-
+    dispatch(emptycartIteam());
+    toast.success("Your Cart is Empty");
   }
 
-  // count total price
+  // Count total price
   const total = () => {
-    let totalprice = 0
-    carts.map((ele, ind) => {
-      totalprice = ele.price * ele.qnty + totalprice
+    let totalprice = 0;
+    carts.forEach((ele) => {
+      totalprice += ele.price * ele.qnty;
     });
-    setPrice(totalprice)
+    setPrice(totalprice);
   }
 
-
-  // count total quantity
+  // Count total quantity
   const countquantity = () => {
-    let totalquantity = 0
-    carts.map((ele, ind) => {
-      totalquantity = ele.qnty + totalquantity
+    let totalquantity = 0;
+    carts.forEach((ele) => {
+      totalquantity += ele.qnty;
     });
-    setTotalQuantity(totalquantity)
+    setTotalQuantity(totalquantity);
   }
 
   useEffect(() => {
-    total()
-  }, [total])
+    total();
+  }, [carts]);
 
   useEffect(() => {
-    countquantity()
-  }, [countquantity])
+    countquantity();
+  }, [carts]);
 
-  //payment integration
+  // Payment integration
   const makePayment = async () => {
     try {
       const stripe = await loadStripe("pk_test_51PUKza2LGrAf9sT3kkyFOaGT6ui6NSeiogR4PdFdEq9ID49WQAinB5Krk7oZ4GMYpIoICt49KfEN1TiGpjsCNLrt00eHbKktjd");
@@ -77,7 +72,7 @@ const CartDetails = () => {
         "Content-type": "application/json"
       };
   
-      const res = await fetch("http://ecommercepayment.vercel.app/api/create-checkout-session", {
+      const res = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: headers,
         body: JSON.stringify(body)
@@ -100,7 +95,14 @@ const CartDetails = () => {
       console.error('Error during payment process:', error);
     }
   };
-  
+
+  // Wallet button click handler
+  const handleWalletClick = () => {
+    // Implement wallet button functionality here
+    alert('Wallet button clicked!');
+    // Example: Redirect to wallet interface or initiate wallet-related actions
+  };
+
   return (
     <>
       <div className='row justify-content-center m-0'>
@@ -116,7 +118,6 @@ const CartDetails = () => {
                     : ""
                 }
               </div>
-
             </div>
             <div className="card-body p-0">
               {
@@ -147,32 +148,30 @@ const CartDetails = () => {
                       {
                         carts.map((data, index) => {
                           return (
-                            <>
-                              <tr>
-                                <td>
-                                  <button className='prdct-delete'
-                                    onClick={() => handleDecrement(data.id)}
-                                  ><i className='fa fa-trash-alt'></i></button>
-                                </td>
-                                <td><div className='product-img'><img src={data.imgdata} alt="" /></div></td>
-                                <td><div className='product-name'><p>{data.dish}</p></div></td>
-                                <td>{data.price}</td>
-                                <td>
-                                  <div className="prdct-qty-container">
-                                    <button className='prdct-qty-btn' type='button'
-                                      onClick={data.qnty <= 1 ? () => handleDecrement(data.id) : () => handleSingleDecrement(data)}
-                                    >
-                                      <i className='fa fa-minus'></i>
-                                    </button>
-                                    <input type="text" className='qty-input-box' value={data.qnty} disabled name="" id="" />
-                                    <button className='prdct-qty-btn' type='button' onClick={() => handleIncrement(data)}>
-                                      <i className='fa fa-plus'></i>
-                                    </button>
-                                  </div>
-                                </td>
-                                <td className='text-right'>₹ {data.qnty * data.price}</td>
-                              </tr>
-                            </>
+                            <tr key={index}>
+                              <td>
+                                <button className='prdct-delete'
+                                  onClick={() => handleDecrement(data.id)}
+                                ><i className='fa fa-trash-alt'></i></button>
+                              </td>
+                              <td><div className='product-img'><img src={data.imgdata} alt="" /></div></td>
+                              <td><div className='product-name'><p>{data.dish}</p></div></td>
+                              <td>{data.price}</td>
+                              <td>
+                                <div className="prdct-qty-container">
+                                  <button className='prdct-qty-btn' type='button'
+                                    onClick={data.qnty <= 1 ? () => handleDecrement(data.id) : () => handleSingleDecrement(data)}
+                                  >
+                                    <i className='fa fa-minus'></i>
+                                  </button>
+                                  <input type="text" className='qty-input-box' value={data.qnty} disabled name="" id="" />
+                                  <button className='prdct-qty-btn' type='button' onClick={() => handleIncrement(data)}>
+                                    <i className='fa fa-plus'></i>
+                                  </button>
+                                </div>
+                              </td>
+                              <td className='text-right'>₹ {data.qnty * data.price}</td>
+                            </tr>
                           )
                         })
                       }
@@ -183,7 +182,10 @@ const CartDetails = () => {
                         <th colSpan={2}>&nbsp;</th>
                         <th>Items In Cart <span className='ml-2 mr-2'>:</span><span className='text-danger'>{totalquantity}</span></th>
                         <th className='text-right'>Total Price<span className='ml-2 mr-2'>:</span><span className='text-danger'>₹ {totalprice}</span></th>
-                        <th className='text-right'><button className='btn btn-success' type='button'onClick={makePayment}>Checkout</button></th>
+                        <th className='text-right'>
+                          <button className='btn btn-success mr-2' type='button' onClick={makePayment}>Checkout</button>
+                          <WalletConnectButton /> {/* Render WalletConnectButton here */}
+                        </th>
                       </tr>
                     </tfoot>
                   </table>
@@ -196,6 +198,11 @@ const CartDetails = () => {
   )
 }
 
-export default CartDetails
+// WalletConnectButton component
+export function WalletConnectButton() {
+  return (
+    <ConnectButton />
+  );
+}
 
-
+export default CartDetails;
